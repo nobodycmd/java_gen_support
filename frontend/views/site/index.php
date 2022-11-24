@@ -40,7 +40,7 @@ $packagename = isset($_GET['packagename']) ? $_GET['packagename'] : 'io.renren.m
         ?>
         <?php
         if($aryConn){
-        ?>
+            ?>
             <script>
                 function c(t) {
                     $.getJSON('<?= \common\helpers\Url::to(['getconn']) ?>?dsn=' + $(t).val(),{},function (res) {
@@ -51,16 +51,16 @@ $packagename = isset($_GET['packagename']) ? $_GET['packagename'] : 'io.renren.m
                         $('#password').val(res.password)
                     });
                 }
-                </script>
-        <div class="form-group">
-            <label class="form-control">常用数据库</label>
-            <?=\common\helpers\Html::dropDownList("conns","",$aryConn,[
+            </script>
+            <div class="form-group">
+                <label class="form-control">常用数据库<a href="<?= \common\helpers\Url::to(['clear']) ?>">清空</a></label>
+                <?=\common\helpers\Html::dropDownList("conns","",$aryConn,[
                     'text' => '选择常用数据库',
                     'onchange' => 'c(this)',
                     'class' => 'form-control'
                 ]) ?>
-        </div>
-        <?php
+            </div>
+            <?php
         }
         ?>
 
@@ -95,9 +95,9 @@ $packagename = isset($_GET['packagename']) ? $_GET['packagename'] : 'io.renren.m
                 <ul>
                     <?php
                     foreach ($tables as $one){
-                    ?>
-                   <li> <a onclick="go('<?= $one ?>')" href="javascript:"><?= $one ?></a> </li>
-                    <?php
+                        ?>
+                        <li> <a onclick="go('<?= $one ?>')" href="javascript:"><?= $one ?></a> </li>
+                        <?php
                     }
                     ?>
                 </ul>
@@ -105,11 +105,11 @@ $packagename = isset($_GET['packagename']) ? $_GET['packagename'] : 'io.renren.m
             <div class="col-lg-8">
                 <?php
                 if($resultFields){
-                ?>
-                <h2>代码</h2>
+                    ?>
+                    <h2>代码</h2>
 
-                <h4>模型</h4>
-                <pre>
+                    <h4>模型</h4>
+                    <pre>
 package <?= $packagename ?>.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
@@ -136,29 +136,29 @@ public class <?=getCamName($tableName) ?>Entity implements Serializable {
     private Integer UserID;
 <?php
 foreach ($resultFields as $row){
-?>
+    ?>
     /**
     * <?= $row['字段说明'] ?>
     * 类型： <?= $row['类型'] ?>  长度：<?= $row['长度'] ?>   小数位数:<?= $row['小数位数'] ?> 可空:<?= $row['允许空'] ?>
     */
     <?php if($row['标识']){ ?>
         @TableId(value = "<?= $row['字段名'] ?>",type = IdType.AUTO)
-        <?php }else{ ?>
-    @TableField("<?= $row['字段名'] ?>")
-        <?php } ?>
+    <?php }else{ ?>
+        @TableField("<?= $row['字段名'] ?>")
+    <?php } ?>
     private <?= $row['标识'] ? 'Long' : getJavaType($row['类型']) ?> <?= str_replace(' ','',ucwords(str_replace('_',' ',$row['字段名']))) ?>;
-                    <?php
+    <?php
     echo PHP_EOL;
-                    }
+}
 ?>
 
 }
 
                 </pre>
-                <hr>
+                    <hr>
 
-                <h4>DAO</h4>
-                <pre>
+                    <h4>DAO</h4>
+                    <pre>
 
 package <?= $packagename ?>.dao;
 
@@ -171,10 +171,10 @@ public interface <?=getCamName($tableName) ?>Dao extends BaseMapper&lt;<?=getCam
 
 }
                 </pre>
-                <hr>
+                    <hr>
 
-                <h4>Service</h4>
-                <pre>
+                    <h4>Service</h4>
+                    <pre>
 package <?= $packagename ?>.service;
 
 import com.baomidou.mybatisplus.service.IService;
@@ -203,10 +203,10 @@ public interface <?=getCamName($tableName) ?>Service extends IService&lt;<?=getC
 
 
                 </pre>
-                <hr>
+                    <hr>
 
-                <h4>Service Imp</h4>
-                <pre>
+                    <h4>Service Imp</h4>
+                    <pre>
 package <?= $packagename ?>.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -274,7 +274,7 @@ public class <?=getCamName($tableName) ?>ServiceImpl extends ServiceImpl&lt;<?=g
 }
                 </pre>
 
-                <?php
+                    <?php
                 }
                 ?>
             </div>
