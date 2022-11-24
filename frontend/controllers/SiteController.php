@@ -153,8 +153,6 @@ class SiteController extends Controller
                 "password" => $model->password,
                 'charset' => 'utf8',
             ];
-            Yii::$app->getSession()->set("conn", $config);
-            $this->addConn($config);
         }
 
 
@@ -163,18 +161,24 @@ class SiteController extends Controller
             $model = $this->configToModel($config);
 
             $conn = Yii::$container->get(\yii\db\Connection::class, [], $config);
-            $list = $conn->createCommand("exec sp_tables")->queryAll();
-            foreach ($list as $one) {
-                if ($one['TABLE_TYPE'] == 'TABLE') {
-                    $tables[] = $one['TABLE_NAME'];
+            try {
+                $list = $conn->createCommand("exec sp_tables")->queryAll();
+                foreach ($list as $one) {
+                    if ($one['TABLE_TYPE'] == 'TABLE') {
+                        $tables[] = $one['TABLE_NAME'];
+                    }
                 }
+                Yii::$app->getSession()->set("conn", $config);
+                $this->addConn($config);
+            }catch (\Exception $e){
+                Yii::$app->session->setFlash('error', $e->getMessage());
             }
         }
 
 
         if(isset($_GET['table'])){
             $tableName = $_GET['table'];
-$sql = <<<EOF
+            $sql = <<<EOF
 SELECT  表名 = CASE WHEN a.colorder = 1 THEN d.name
                   ELSE ''
              END ,
@@ -225,12 +229,12 @@ ORDER BY a.id ,
         a.colorder
 EOF;
 
-$conn = $this->getConn();
-$resultFields = $conn->createCommand($sql)->queryAll();
+            $conn = $this->getConn();
+            $resultFields = $conn->createCommand($sql)->queryAll();
         }
 
         return $this->render('index', [
-            'conns' => Yii::$app->getSession()->get("conns"),
+            'conns' => array_unique(Yii::$app->getSession()->get("conns")),
             'model' => $model,
             'tables' => $tables,
             'tableName' => $tableName,
